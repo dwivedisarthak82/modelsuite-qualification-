@@ -48,16 +48,30 @@ const submitTask = async (req, res) => {
 // @access Protect only — no admin guard
 const getSubmission = async (req, res) => {
   try {
-    const submission = await Submission.findOne({ taskId: req.params.taskId })
-      .populate('talentId', 'name email');
+    let submission;
+
+    if (req.user.role === "Admin") {
+      submission = await Submission.findOne({
+        taskId: req.params.taskId,
+      }).populate("talentId", "name email");
+    } else {
+      submission = await Submission.findOne({
+        taskId: req.params.taskId,
+        talentId: req.user._id,
+      }).populate("talentId", "name email");
+    }
 
     if (!submission) {
-      return res.status(404).json({ message: 'No submission found for this task' });
+      return res.status(404).json({
+        message: "No submission found for this task",
+      });
     }
 
     res.json(submission);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
