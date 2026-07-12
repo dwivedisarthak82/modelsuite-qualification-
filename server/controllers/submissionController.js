@@ -18,22 +18,13 @@ const submitTask = async (req, res) => {
       ? `http://localhost:5000/uploads/${req.file.filename}`
       : req.body.fileUrl || null;
     // — no audit trail of re-submissions
-    let submission = await Submission.findOne({ taskId, talentId: req.user._id });
 
-    if (submission) {
-      // Overwrite: update in place
-      submission.fileUrl = fileUrl;
-      submission.notes = notes;
-      await submission.save();
-    } else {
-      submission = await Submission.create({
-        taskId,
-        talentId: req.user._id,
-        fileUrl,
-        notes,
-      });
-    }
-
+    const submission = await Submission.create({
+    taskId,
+    talentId: req.user._id,
+    fileUrl,
+     notes,
+    });
     // Update task status to Submitted
     await Task.findByIdAndUpdate(taskId, { status: 'Submitted' });
 
@@ -52,8 +43,10 @@ const getSubmission = async (req, res) => {
 
     if (req.user.role === "Admin") {
       submission = await Submission.findOne({
-        taskId: req.params.taskId,
-      }).populate("talentId", "name email");
+      taskId: req.params.taskId,
+      })
+      .sort({ createdAt: -1 })
+      .populate("talentId", "name email");
     } else {
       submission = await Submission.findOne({
         taskId: req.params.taskId,
