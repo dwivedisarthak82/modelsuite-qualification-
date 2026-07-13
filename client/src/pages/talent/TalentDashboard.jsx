@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import TalentSidebar from '../../components/talent/TalentSidebar';
 import AvailableTasksList from '../../components/talent/AvailableTasksList';
 import MyTasksList from '../../components/talent/MyTasksList';
-import { fetchAvailableTasks, fetchMyTasks } from '../../api/talent';
+import { fetchAvailableTasks, fetchMyTasks , fetchSubmissionHistory} from '../../api/talent';
 import { useAuth } from '../../context/AuthContext';
+import SubmissionHistory from '../../components/talent/SubmissionHistory';
+
 
 /* ── Wave emoji stripped, use clean greeting ── */
 
@@ -12,6 +14,16 @@ const TalentDashboard = () => {
   const [availableTasks, setAvailableTasks] = useState([]);
   const [myTasks, setMyTasks]               = useState([]);
   const [error, setError] = useState(null);
+  const [history, setHistory] = useState([]);
+
+  const loadHistory = async () => {
+  try {
+    const { data } = await fetchSubmissionHistory();
+    setHistory(data);
+  } catch {
+    console.log("Failed to load history");
+  }
+};
 
   const loadAvailable = async () => {
     try { const { data } = await fetchAvailableTasks(); setAvailableTasks(data); }
@@ -24,8 +36,8 @@ const TalentDashboard = () => {
   };
 
   // eslint-disable-next-line
-  useEffect(() => { loadAvailable(); loadMyTasks(); }, []);
-  const handleRefresh = () => { loadAvailable(); loadMyTasks(); };
+  useEffect(() => { loadAvailable(); loadMyTasks(); loadHistory(); }, []);
+  const handleRefresh = () => { loadAvailable(); loadMyTasks(); loadHistory(); };
 
   return (
     <div className="flex min-h-screen" style={{ background: '#050505' }}>
@@ -70,6 +82,7 @@ const TalentDashboard = () => {
           <AvailableTasksList tasks={availableTasks} onClaimed={handleRefresh} />
         </section>
 
+
         {/* My Tasks */}
         <section className="mb-7 page-section">
           <div className="flex items-center gap-2.5 mb-4">
@@ -88,6 +101,20 @@ const TalentDashboard = () => {
           </div>
           <MyTasksList tasks={myTasks} onRefresh={handleRefresh} />
         </section>
+
+        {/* Submission History */}
+        <section className="mb-7 page-section">
+     <div className="flex items-center gap-2.5 mb-4">
+     <h2
+       className="text-[11px] font-semibold uppercase tracking-[0.1em]"
+       style={{ color: "#4B5563" }}
+      >
+        Submission History
+      </h2>
+       </div>
+
+      <SubmissionHistory history={history} />
+      </section>
       </main>
     </div>
   );
