@@ -45,7 +45,13 @@ const SubmissionHistory = ({ history }) => {
 
           <p style={{ color: "#9CA3AF" }}>
             <strong>Submitted:</strong>{" "}
-            {new Date(item.createdAt).toLocaleString()}
+            {new Date(item.createdAt).toLocaleDateString("en-US", {
+               year: "numeric",
+               month: "short",
+               day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </p>
 
           {item.fileUrl && (

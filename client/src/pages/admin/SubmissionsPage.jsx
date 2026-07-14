@@ -9,6 +9,18 @@ const REVIEW_STATUS_CLASS = {
   Rejected: 'status-badge-Rejected',
 };
 
+const fmtDate = (date) => {
+  if (!date) return "—";
+
+  return new Date(date).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 const SubmissionsPage = () => {
   const [submissions, setSubmissions] = useState([]);
   const [reviewTarget, setReviewTarget] = useState(null);
@@ -130,7 +142,7 @@ const SubmissionsPage = () => {
 
                       {/* Submitted at — raw ISO */}
                       <td className={`${tdCls} text-text-muted text-[13px] whitespace-nowrap`}>
-                        {sub.createdAt}
+                         {fmtDate(sub.createdAt)}
                       </td>
 
                       {/* Review status */}

@@ -6,6 +6,19 @@ const REVIEW_STATUS_CLASS = {
   Rejected: 'status-badge-Rejected',
 };
 
+
+const fmtDate = (raw) => {
+  if (!raw) return "—";
+
+  const date = new Date(raw);
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
 const SubmissionReviewModal = ({ submission, onClose, onReviewed }) => {
 
   const handleReview = async (status) => {
@@ -44,7 +57,7 @@ const SubmissionReviewModal = ({ submission, onClose, onReviewed }) => {
             <p className="text-[15px] font-semibold text-text-primary">{task.title || '—'}</p>
             <div className="flex items-center gap-3 mt-2">
               {task.dueDate && (
-                <span className="text-[12px] text-text-faint">Due: {task.dueDate}</span>
+                <span className="text-[12px] text-text-faint">Due: {fmtDate(task.dueDate)}</span>
               )}
               
               {task.status && (
