@@ -13,19 +13,29 @@ const labelCls = 'text-[11px] font-semibold uppercase tracking-[0.6px] text-text
 const LoginPage = () => {
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login }   = useAuth();
   const navigate    = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await API.post('/auth/login', { email, password });
-      login(data);
-      data.role === 'Admin' ? navigate('/admin/dashboard') : navigate('/talent/dashboard');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Login failed');
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  setLoading(true);
+
+  try {
+    const { data } = await API.post('/auth/login', { email, password });
+
+    login(data);
+
+    data.role === 'Admin'
+      ? navigate('/admin/dashboard')
+      : navigate('/talent/dashboard');
+  } catch (err) {
+    alert(err.response?.data?.message || 'Login failed');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[480px_1fr]">
@@ -53,9 +63,12 @@ const LoginPage = () => {
               value={password} onChange={(e) => setPassword(e.target.value)} required className={inputCls} />
           </div>
 
-          <button type="submit"
-            className="mt-1.5 w-full py-3.5 rounded-[10px] text-[15px] font-semibold text-white cursor-pointer btn-gradient border-none hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200">
-            Sign In
+          <button
+            type="submit"
+            disabled={loading}
+             className="mt-1.5 w-full py-3.5 rounded-[10px] text-[15px] font-semibold text-white btn-gradient border-none hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 

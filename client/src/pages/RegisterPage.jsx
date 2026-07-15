@@ -15,19 +15,34 @@ const RegisterPage = () => {
   const [email, setEmail]     = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole]       = useState('Talent');
+  const [loading, setLoading] = useState(false);
   const { login }  = useAuth();
   const navigate   = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await API.post('/auth/register', { name, email, password, role });
-      login(data);
-      data.role === 'Admin' ? navigate('/admin/dashboard') : navigate('/talent/dashboard');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Registration failed');
-    }
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  setLoading(true);
+
+  try {
+    const { data } = await API.post('/auth/register', {
+      name,
+      email,
+      password,
+      role,
+    });
+
+    login(data);
+
+    data.role === 'Admin'
+      ? navigate('/admin/dashboard')
+      : navigate('/talent/dashboard');
+  } catch (err) {
+    alert(err.response?.data?.message || 'Registration failed');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[480px_1fr]">
@@ -69,10 +84,13 @@ const RegisterPage = () => {
             </select>
           </div>
 
-          <button type="submit"
-            className="mt-2 w-full py-3.5 rounded-[10px] text-[15px] font-semibold text-white cursor-pointer btn-gradient border-none hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200">
-            Setup Profile
-          </button>
+          <button
+           type="submit"
+           disabled={loading}
+           className="mt-2 w-full py-3.5 rounded-[10px] text-[15px] font-semibold text-white btn-gradient border-none hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+           {loading ? "Setting Up..." : "Setup Profile"}
+         </button>
         </form>
 
         <p className="mt-7 text-sm text-text-muted text-center relative z-10 animate-fade-slide" style={{ animationDelay: '0.25s', animationFillMode: 'both' }}>
