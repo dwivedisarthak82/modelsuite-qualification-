@@ -117,7 +117,7 @@ const reviewSubmission = async (req, res) => {
 // @access Talent
 const getSubmissionHistory = async (req, res) => {
 
-  console.log("History route hit");
+  
   try {
     const submissions = await Submission.find({
       talentId: req.user._id,
